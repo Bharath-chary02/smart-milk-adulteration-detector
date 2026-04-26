@@ -5,6 +5,7 @@ const ReadingSchema = new mongoose.Schema({
   temperature: Number,
   conductivity: Number,
   result: String,
+  confidence: Number,
   timestamp: {
     type: Date,
     default: Date.now
