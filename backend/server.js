@@ -74,7 +74,7 @@ app.post('/api/r', async (req, res) => {
     const { ph, temperature, conductivity } = req.body;
     console.log('Data received /api/r:', req.body);
 
-    const mlResponse = await axios.post('http://127.0.0.1:5000/predict', {
+    const mlResponse = await axios.post('https://milk-ml.onrender.com/predict', {
       ph, temperature, conductivity
     });
     const result = mlResponse.data.result;
