@@ -74,7 +74,14 @@ app.post('/api/r', async (req, res) => {
     const { ph, temperature, conductivity } = req.body;
     console.log('Data received /api/r:', req.body);
 
-    const mlResponse = await axios.post('https://milk-ml.onrender.com/predict', {
+    // ===== ML SERVICE URL =====
+    // Use this when running locally:
+    const ML_URL = "http://127.0.0.1:5000/predict";
+
+    // Use this when deployed on Render:
+    // const ML_URL = "https://milk-ml.onrender.com/predict";
+
+    const mlResponse = await axios.post(ML_URL, {
       ph, temperature, conductivity
     });
     const result = mlResponse.data.result;

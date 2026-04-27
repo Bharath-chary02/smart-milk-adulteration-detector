@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const API = "https://milk-backend-ghny.onrender.com";
+// ===== API BASE URL =====
+// Use this when running locally:
+const API = "http://192.168.43.122:3000";
+
+// Use this when deployed on Vercel (point to Render backend):
+// const API = "https://milk-backend-ghny.onrender.com";
 
 function getResultColor(result) {
   if (result === "Pure") return "#22c55e";
