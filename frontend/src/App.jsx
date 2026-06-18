@@ -8,8 +8,22 @@ import axios from "axios";
 // Use this when deployed on Vercel (point to Render backend):
 const API = "https://milk-backend-ghny.onrender.com";
 
+const SAMPLE_DATA = [
+  { _id: "1", ph: 6.45, temperature: 29.3, conductivity: 412.5, result: "Pure", confidence: 96.33, timestamp: "2026-04-26T08:00:00Z" },
+  { _id: "2", ph: 6.63, temperature: 30.1, conductivity: 498.7, result: "Pure", confidence: 93.12, timestamp: "2026-04-26T08:30:00Z" },
+  { _id: "3", ph: 6.71, temperature: 28.5, conductivity: 532.1, result: "Pure", confidence: 91.87, timestamp: "2026-04-26T09:00:00Z" },
+  { _id: "4", ph: 7.08, temperature: 31.2, conductivity: 278.4, result: "Watered", confidence: 89.45, timestamp: "2026-04-26T09:30:00Z" },
+  { _id: "5", ph: 6.92, temperature: 27.9, conductivity: 301.6, result: "Watered", confidence: 86.23, timestamp: "2026-04-26T10:00:00Z" },
+  { _id: "6", ph: 8.45, temperature: 29.8, conductivity: 1245.3, result: "Detergent", confidence: 98.76, timestamp: "2026-04-26T10:30:00Z" },
+  { _id: "7", ph: 7.95, temperature: 30.4, conductivity: 876.2, result: "Detergent", confidence: 94.32, timestamp: "2026-04-26T11:00:00Z" },
+  { _id: "8", ph: 7.15, temperature: 28.7, conductivity: 645.8, result: "Urea", confidence: 88.91, timestamp: "2026-04-26T11:30:00Z" },
+  { _id: "9", ph: 6.98, temperature: 31.5, conductivity: 698.4, result: "Urea", confidence: 85.67, timestamp: "2026-04-26T12:00:00Z" },
+  { _id: "10", ph: 6.55, temperature: 29.6, conductivity: 476.3, result: "Pure", confidence: 95.44, timestamp: "2026-04-26T12:30:00Z" },
+];
+
 function getResultColor(result) {
   if (result === "Pure") return "#22c55e";
+  if (result === "Milk") return "#22c55e";
   if (result === "Adulterated") return "#ef4444";
   if (result === "Detergent") return "#f97316";
   if (result === "Urea") return "#a855f7";
@@ -19,31 +33,18 @@ function getResultColor(result) {
 }
 
 export default function App() {
-  const [readings, setReadings] = useState([]);
-  const [latest, setLatest] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [readings, setReadings] = useState(SAMPLE_DATA);
+  const [latest, setLatest] = useState(SAMPLE_DATA[0]);
 
   const fetchReadings = async () => {
     try {
       const res = await axios.get(`${API}/api/readings`);
-      setReadings(res.data);
-      setLatest(res.data[0]);
+      if (res.data && res.data.length > 0) {
+        setReadings(res.data);
+        setLatest(res.data[0]);
+      }
     } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // ✅ NEW: Trigger API call
-  const triggerTest = async () => {
-    try {
-      setLoading(true);
-      await axios.post(`${API}/api/trigger`);
-      alert("Trigger sent! Arduino will take reading...");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to trigger!");
-    } finally {
-      setLoading(false);
+      console.error("Using sample data:", err);
     }
   };
 
@@ -55,28 +56,23 @@ export default function App() {
 
   return (
     <div style={{ fontFamily: "sans-serif", padding: "20px", background: "#f1f5f9", minHeight: "100vh" }}>
-      
+
       <h1 style={{ textAlign: "center", color: "#1e293b" }}>
         🥛 Milk Analyser Dashboard
       </h1>
 
-      {/* ✅ TEST BUTTON */}
-      <div style={{ textAlign: "center", marginBottom: "20px" }}>
-        <button
-          onClick={triggerTest}
-          disabled={loading}
-          style={{
-            background: loading ? "#94a3b8" : "#3b82f6",
-            color: "white",
-            border: "none",
-            padding: "12px 24px",
-            borderRadius: "8px",
-            fontSize: "16px",
-            cursor: "pointer",
-          }}
-        >
-          {loading ? "Sending..." : "Test Now"}
-        </button>
+      {/* Sample Data Banner */}
+      <div style={{
+        background: "#fef9c3",
+        border: "1px solid #fbbf24",
+        borderRadius: "8px",
+        padding: "12px 20px",
+        marginBottom: "20px",
+        textAlign: "center",
+        color: "#92400e"
+      }}>
+        ⚠️ <strong>Note:</strong> The readings displayed here are sample data for demonstration purposes.
+        To view live real-time readings, the IoT hardware setup (Arduino UNO + sensors) must be connected and running on the local network.
       </div>
 
       {latest && (
@@ -86,7 +82,7 @@ export default function App() {
           </h2>
 
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-            
+
             {/* pH */}
             <div style={{ flex: 1, background: "#f8fafc", borderRadius: "8px", padding: "16px", textAlign: "center" }}>
               <div style={{ fontSize: "32px", fontWeight: "bold", color: "#3b82f6" }}>
@@ -159,15 +155,13 @@ export default function App() {
                 <td style={{ padding: "10px" }}>{r.conductivity.toFixed(1)}</td>
 
                 <td style={{ padding: "10px" }}>
-                  <span
-                    style={{
-                      background: getResultColor(r.result),
-                      color: "white",
-                      padding: "2px 10px",
-                      borderRadius: "12px",
-                      fontSize: "13px",
-                    }}
-                  >
+                  <span style={{
+                    background: getResultColor(r.result),
+                    color: "white",
+                    padding: "2px 10px",
+                    borderRadius: "12px",
+                    fontSize: "13px",
+                  }}>
                     {r.result}
                   </span>
                 </td>
